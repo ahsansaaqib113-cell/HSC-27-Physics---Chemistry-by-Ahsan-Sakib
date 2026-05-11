@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>রসায়ন ও পদার্থবিজ্ঞান পরীক্ষা</title>
+    <style>
+        body { font-family: 'Times New Roman', Times, serif; background-color: #fff; color: #000; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: auto; }
+        h1 { text-align: center; text-decoration: underline; margin-bottom: 30px; color: #000; }
+        #timer { position: fixed; top: 10px; right: 10px; border: 2px solid #000; padding: 10px; font-weight: bold; background: #fff; z-index: 100; }
+        .question { margin-bottom: 25px; border-bottom: 1px dashed #ccc; padding-bottom: 15px; }
+        .question p { margin-bottom: 8px; font-weight: bold; font-size: 1.1rem; }
+        .options { margin-left: 20px; display: block; }
+        .options label { display: block; margin: 5px 0; cursor: pointer; }
+        .frac { display: inline-block; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 2px; }
+        .frac span { display: block; padding: 0 2px; }
+        .frac span.bottom { border-top: 1px solid black; }
+        button { display: block; width: 220px; padding: 12px; border: 2px solid #000; background: #f0f0f0; cursor: pointer; margin: 40px auto; font-size: 18px; font-weight: bold; }
+        button:hover { background: #e0e0e0; }
+        #result { display: none; text-align: center; border: 3px solid #000; padding: 30px; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+<div id="timer">সময় বাকি: 40:00</div>
+
+<div class="container" id="quiz-box">
+    <h1>রসায়ন ও পদার্থবিজ্ঞান চূড়ান্ত পরীক্ষা</h1>
+    <div id="questions-container"></div>
+    <button onclick="calculateScore()">সাবমিট করুন</button>
+</div>
+
+<div class="container" id="result"></div>
+
+<script>
+    function createFrac(top, bottom) {
+        return `<span class="frac"><span>${top}</span><span class="bottom">${bottom}</span></span>`;
+    }
+
+    const questions = [
+        { q: `১. একটি আদর্শ গ্যাসের জন্য PV বনাম ${createFrac(1, 'P')} লেখচিত্র হবে একটি—`, options: ["(a) ছেদকসহ সরলরেখা", "(b) অধিবৃত্ত", "(c) X-অক্ষের সমান্তরাল সরলরেখা", "(d) মূলবিন্দুগামী সরলরেখা"], ans: 2 },
+        { q: "২. প্রমাণ অবস্থায় 10.0 L মিথেন গ্যাসে অণুর সংখ্যা কত?", options: ["(a) 2.689 × 10<sup>23</sup>", "(b) 26.89 × 10<sup>23</sup>", "(c) 0.2689 × 10<sup>23</sup>", "(d) 26.89 × 10<sup>25</sup>"], ans: 0 },
+        { q: "৩. STP তে কোন গ্যাসের 2.0 গ্রাম সবচেয়ে বেশি আয়তন দখল করে?", options: ["(a) O<sub>2</sub>", "(b) Cl<sub>2</sub>", "(c) He", "(d) N<sub>2</sub>"], ans: 2 },
+        { q: "৪. STP তে নিচের কোন গ্যাসের এক মি.লি. এর ভর কম?", options: ["(a) N<sub>2</sub>", "(b) O<sub>2</sub>", "(c) CO<sub>2</sub>", "(d) NO<sub>2</sub>"], ans: 0 },
+        { q: "৫. অজ্ঞাত গ্যাসের আণবিক ভর কত? (নিঃসরণ হার ৬:৭, ক্লোরিন ৩৬)", options: ["(a) 50", "(b) 52", "(c) 98", "(d) 25", "(e) 49"], ans: 4 },
+        { q: "৬. নিচের কোন ক্ষেত্রে ব্যাপন সর্বাধিক হবে?", options: ["(a) 5°C এ CO", "(b) 35°C এ CO", "(c) 5°C এ Neon", "(d) 35°C এ Neon"], ans: 3 },
+        { q: `৭. গ্যাসের গতিতত্ত্ব অনুযায়ী RMS বেগ (C) এর সঠিক সমীকরণ কোনটি?`, options: ["(a) C = √(" + createFrac('3RT', 'M') + ")", "(b) C = √(" + createFrac('3KT', 'm') + ")", "(c) C = √(" + createFrac('3P', 'd') + ")", "(d) উপরের সবগুলো"], ans: 3 },
+        { q: `৮. নিম্নের কোন সমীকরণটি গ্যাসের গতিতত্ত্ব থেকে উদ্ভূত?`, options: ["(a) C = √(" + createFrac('3RT', 'M') + ")", "(b) PV = " + createFrac('2', '3') + " KT", "(c) V = √(" + createFrac('8RT', 'πM') + ")", "(d) PV = " + createFrac('1', '3') + " mNC<sup>2</sup>"], ans: 3 },
+        { q: "৯. স্থির তাপমাত্রায় R.M.S. বেগের সঠিক ক্রম কোনটি?", options: ["(a) O<sub>2</sub> > CO<sub>2</sub> > SO<sub>2</sub>", "(b) CO<sub>2</sub> > O<sub>2</sub> > SO<sub>2</sub>", "(c) SO<sub>2</sub> > CO<sub>2</sub> > O<sub>2</sub>", "(d) O<sub>2</sub> > SO<sub>2</sub> > CO<sub>2</sub>"], ans: 0 },
+        { q: "১০. স্থির চাপে গ্যাসের গতিবেগ ঘনত্বের –", options: ["(a) সমানুপাতিক", "(b) ব্যস্তানুপাতিক", "(c) বর্গের সমানুপাতিক", "(d) বর্গমূলের ব্যস্তানুপাতিক"], ans: 3 },
+        { q: "১১. দুটি গ্যাসের গড় গতিশক্তি কখন সমান হয়?", options: ["(a) চাপ সমান", "(b) আণবিক ভর সমান", "(c) তাপমাত্রা সমান", "(d) আয়তন সমান"], ans: 2 },
+        { q: "১২. 27°C তাপমাত্রায় 32.0 g মিথেন অণুর গড় গতিশক্তি কত?", options: ["(a) 5322.4 J", "(b) 7482.6 J", "(c) 4988.4 J", "(d) 1558.5 J"], ans: 1 },
+        { q: "১৩. কোন তাপমাত্রায় একটি অণুর গতিশক্তি শূন্য হবে?", options: ["(a) 0°C", "(b) 273°C", "(c) 0 K", "(d) 298 K"], ans: 2 },
+        { q: "১৪. কোন গ্যাসটি অধিক পেষণযোগ্য?", options: ["(a) H<sub>2</sub>", "(b) He", "(c) O<sub>2</sub>", "(d) CO<sub>2</sub>"], ans: 3 },
+        { q: "১৫. ভ্যান ডার ওয়ালস সমীকরণে 'a' কী নির্দেশ করে?", options: ["(a) অণুর আয়তন", "(b) আন্তঃআণবিক আকর্ষণ", "(c) গ্যাসের চাপ", "(d) অণুর সংখ্যা"], ans: 1 },
+        { q: "১৬. ভ্যান ডার ওয়ালস ধ্রুবক 'b' এর একক কোনটি?", options: ["(a) L mol<sup>-1</sup>", "(b) atm L<sup>2</sup> mol<sup>-2</sup>", "(c) atm mol<sup>-1</sup>", "(d) L<sup>2</sup> mol<sup>-1</sup>"], ans: 0 },
+        { q: "১৭. CO<sub>2</sub> গ্যাসের সন্ধি তাপমাত্রা কত?", options: ["(a) 21.5°C", "(b) 31.1°C", "(c) 15.5°C", "(d) 100°C"], ans: 1 },
+        { q: "১৮. বেগের সঠিক সম্পর্ক কোনটি?", options: ["(a) C<sub>rms</sub> > C<sub>avg</sub> > C<sub>mp</sub>", "(b) C<sub>rms</sub> < C<sub>avg</sub>", "(c) C<sub>avg</sub> > C<sub>rms</sub>", "(d) C<sub>mp</sub> > C<sub>avg</sub>"], ans: 0 },
+        { q: `১৯. 16g He (n=4) এর জন্য সঠিক ভ্যান ডার ওয়ালস সমীকরণ কোনটি?`, options: ["(a) (P + " + createFrac('a', 'V<sup>2</sup>') + ")(V - b) = RT", "(b) (P + " + createFrac('16a', 'V<sup>2</sup>') + ")(V - 4b) = 4RT", "(c) (P + " + createFrac('n<sup>2</sup>a', 'V<sup>2</sup>') + ")(V - nb) = nRT", "(d) b ও c উভয়ই"], ans: 3 },
+        { q: "২০. কী অবস্থায় বাস্তব গ্যাস আদর্শ আচরণ করে?", options: ["(a) নিম্ন T ও উচ্চ P", "(b) উচ্চ T ও নিম্ন P", "(c) উচ্চ T ও উচ্চ P", "(d) নিম্ন T ও নিম্ন P"], ans: 1 },
+        { q: "২১. জলীয় বাষ্পের উপস্থিতিতে শুষ্ক গ্যাসের চাপ (P<sub>dry</sub>):", options: ["(a) P<sub>total</sub> - f", "(b) P<sub>total</sub> + f", "(c) f - P<sub>total</sub>", "(d) P<sub>total</sub> * f"], ans: 0 },
+        { q: "২২. কোন গ্যাস জোড়ায় ব্যাপন হার সমান?", options: ["(a) CO<sub>2</sub> & NO<sub>2</sub>", "(b) CO<sub>2</sub> & N<sub>2</sub>O", "(c) CO & N<sub>2</sub>O", "(d) NO & CO"], ans: 1 },
+        { q: "২৩. 273K এ 1/V=0.04 হলে P=1 atm; 1/V=0.035 হলে P কত?", options: ["(ক) 1.875 atm", "(খ) 1.142 atm", "(গ) 0.875 atm", "(ঘ) 0.352 atm"], ans: 2 },
+        { q: "২৪. নিচের কোনটি চাপের একক নয়?", options: ["(a) Nm<sup>-2</sup>", "(b) atm", "(c) Litre-atm", "(d) torr"], ans: 2 },
+        { q: "২৫. M<sub>A</sub> > M<sub>C</sub> > M<sub>B</sub> হলে সমভরের গ্যাসের চাপের সম্পর্ক:", options: ["(a) P<sub>A</sub> = P<sub>B</sub>", "(b) P<sub>A</sub> > P<sub>C</sub>", "(c) P<sub>A</sub> < P<sub>C</sub> < P<sub>B</sub>", "(d) P<sub>B</sub> > P<sub>C</sub>"], ans: 2 },
+        { q: "২৬. সমআয়তন ও সমচাপে কোন ফ্লাস্কে অণু সংখ্যা বেশি থাকবে?", options: ["(a) He ফ্লাস্ক", "(b) Ne ফ্লাস্ক", "(c) Kr ফ্লাস্ক", "(d) সবগুলোতে সমান"], ans: 3 },
+        { q: "২৭. গ্যাসের শেষ তাপমাত্রা কত? (20°C, 1.5 bar → 7.5 bar, 0.04 m³)", options: ["(a) 293°C", "(b) 313°C", "(c) 586°C", "(d) কোনটিই নয়"], ans: 4 },
+        { q: "২৮. UF<sub>6</sub> গ্যাসের ব্যাপন হারের সঠিক ক্রম কোনটি?", options: ["(a) <sup>235</sup>UF<sub>6</sub> > <sup>238</sup>UF<sub>6</sub>", "(b) <sup>238</sup>UF<sub>6</sub> > <sup>235</sup>UF<sub>6</sub>", "(c) সমান", "(d) আণবিক ভর নিরপেক্ষ"], ans: 0 },
+        { q: "২৯. 50g গ্লুকোজ ও 500mL পানির দ্রবণে পানির মোল ভগ্নাংশ:", options: ["(a) 0.9901", "(b) 0.9801", "(c) 0.9899", "(d) 0.9902"], ans: 0 },
+        { q: "৩০. He এর উৎক্রম তাপমাত্রা (Inversion Temp) কত?", options: ["(a) 240°C", "(b) 80°C", "(c) -80°C", "(d) -240°C"], ans: 3 },
+        { q: "৩১. আদর্শ আচরণ থেকে বিচ্যুতির সঠিক ক্রম:", options: ["(a) H<sub>2</sub> < N<sub>2</sub> < CO<sub>2</sub> < NH<sub>3</sub>", "(b) H<sub>2</sub> < NH<sub>3</sub>", "(c) CO<sub>2</sub> > NH<sub>3</sub>", "(d) N<sub>2</sub> > H<sub>2</sub>"], ans: 0 },
+        { q: "৩২. মিনামাটা রোগ কোনটির দূষণে হয়?", options: ["ক. Pb", "খ. Hg", "গ. Cd", "ঘ. Cr"], ans: 1 },
+        { q: "৩৩. স্ট্রাটোস্ফিয়ার এর মুখ্য উপাদান কোনটি?", options: ["ক. N<sub>2</sub>", "খ. O<sub>3</sub>", "গ. H<sub>2</sub>", "ঘ. CO<sub>2</sub>"], ans: 1 },
+        { q: "৩৪. বায়ুমণ্ডলের কোন অঞ্চলটি 'শান্তমন্ডল' নামে পরিচিত?", options: ["ক. এক্সোস্ফিয়ার", "খ. স্ট্রাটোস্ফিয়ার", "গ. আয়োনোস্ফিয়ার", "ঘ. ট্রপোস্ফিয়ার"], ans: 1 },
+        { q: "৩৫. ট্রপোস্ফিয়ারে কোন গ্রিন হাউজ গ্যাসের জীবনকাল দীর্ঘ?", options: ["ক. CO<sub>2</sub>", "খ. CFC", "গ. NO<sub>x</sub>", "ঘ. CH<sub>4</sub>"], ans: 0 },
+        { q: "৩৬. বেতার তরঙ্গ কোন স্তরে বাধা পেয়ে ফিরে আসে?", options: ["ক. এক্সোস্ফিয়ার", "খ. আয়োনোস্ফিয়ার", "গ. স্ট্র্যাটোস্ফিয়ার", "ঘ. মেসোস্ফিয়ার"], ans: 1 },
+        { q: "৩৭. নাইট্রোজেন তৈরি হতে সাগরের পানির তাপমাত্রা কত থাকতে হয়?", options: ["ক. 25°C", "খ. 27°C", "গ. 30°C", "ঘ. 40°C"], ans: 1 },
+        { q: "৩৮. নিচের কোনটি সেকেন্ডারি দূষক?", options: ["ক. CO<sub>2</sub>", "খ. CO", "গ. SO<sub>2</sub>", "ঘ. O<sub>3</sub>"], ans: 3 },
+        { q: "৩৯. ফটোকেমিক্যাল স্মোগ তৈরিতে কোনটি ভূমিকা রাখে না?", options: ["ক. হাইড্রোকার্বন", "খ. NO<sub>2</sub>", "গ. O<sub>3</sub>", "ঘ. CFC"], ans: 3 },
+        { q: "৪০. বায়ুমণ্ডলের কোন গ্যাসকে 'নীরব ঘাতক' বলা হয়?", options: ["ক. CO", "খ. SO<sub>2</sub>", "গ. KMnO<sub>4</sub>", "ঘ. NH<sub>3</sub>"], ans: 0 },
+        { q: "৪১. FGD প্লান্টের মাধ্যমে কোনটি দূর করা যায় না?", options: ["ক. SO<sub>x</sub>", "খ. NO<sub>x</sub>", "গ. CO<sub>2</sub>", "ঘ. CO"], ans: 2 },
+        { q: "৪২. ফ্রেয়ন-১২ (Freon-12) নামে পরিচিত কোনটি?", options: ["ক. CF<sub>2</sub>Cl<sub>2</sub>", "খ. CFCl<sub>3</sub>", "গ. CHF<sub>2</sub>Cl", "ঘ. CHFCl<sub>2</sub>"], ans: 0 },
+        { q: "৪৩. এসিড বৃষ্টির pH এর মান সাধারণত কত?", options: ["ক. > ৫.৬", "খ. < ৫.৬", "গ. > ৬.৫", "ঘ. < ৬.৫"], ans: 1 },
+        { q: "৪৪. এসিড বৃষ্টির জন্য প্রধানত দায়ী কোন গ্যাসটি?", options: ["ক. NO", "খ. NO<sub>2</sub>", "গ. SO<sub>2</sub>", "ঘ. SO<sub>3</sub>"], ans: 2 },
+        { q: "৪৫. নিচের কোনটি লুইস এসিড নয়?", options: ["ক. BCl<sub>3</sub>", "খ. SnCl<sub>4</sub>", "গ. BaCl<sub>2</sub>", "ঘ. AlCl<sub>3</sub>"], ans: 2 },
+        { q: "৪৬. সবচেয়ে দুর্বল এসিড কোনটি?", options: ["ক. HNO<sub>3</sub>", "খ. HClO<sub>4</sub>", "গ. H<sub>2</sub>SO<sub>4</sub>", "ঘ. H<sub>3</sub>PO<sub>4</sub>"], ans: 3 },
+        { q: "৪৭. ব্রনস্টেড-লাউরি এসিড কিন্তু আরহেনিয়াস নয় কোনটি?", options: ["ক. CH<sub>3</sub>COOH", "খ. AlCl<sub>3</sub>", "গ. NH<sub>4</sub><sup>+</sup>", "ঘ. BF<sub>3</sub>"], ans: 2 },
+        { q: "৪৮. কোন আয়নটি উভধর্মী (Amphoteric) হিসেবে আচরণ করে?", options: ["(ক) ClO<sup>-</sup>", "(খ) HPO<sub>4</sub><sup>2-</sup>", "(গ) ClO<sub>4</sub><sup>-</sup>", "(ঘ) HCO<sub>3</sub><sup>-</sup>"], ans: 3 },
+        { q: "৪৯. সর্বাপেক্ষা দুর্বল অনুবন্ধী ক্ষারক কোনটি?", options: ["ক. CO<sub>3</sub><sup>2-</sup>", "খ. SO<sub>4</sub><sup>2-</sup>", "গ. NO<sub>3</sub><sup>-</sup>", "ঘ. ClO<sub>4</sub><sup>-</sup>"], ans: 3 },
+        { q: "৫০. H<sub>2</sub>S এর অনুবন্ধী ক্ষারক কোনটি?", options: ["ক. NH<sub>3</sub>", "খ. HS<sup>-</sup>", "গ. NH<sub>4</sub><sup>+</sup>", "ঘ. S<sup>2-</sup>"], ans: 1 }
+    ];
+
+    const container = document.getElementById('questions-container');
+    questions.forEach((q, index) => {
+        let qDiv = document.createElement('div');
+        qDiv.className = 'question';
+        qDiv.innerHTML = `<p>${q.q}</p><div class="options">` +
+            q.options.map((opt, i) => `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label>`).join('') +
+            `</div>`;
+        container.appendChild(qDiv);
+    });
+
+    let timeLeft = 40 * 60;
+    const timerElement = document.getElementById('timer');
+    const timerInterval = setInterval(() => {
+        let mins = Math.floor(timeLeft / 60);
+        let secs = timeLeft % 60;
+        timerElement.innerText = `সময় বাকি: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            calculateScore();
+        }
+        timeLeft--;
+    }, 1000);
+
+    function calculateScore() {
+        clearInterval(timerInterval);
+        let score = 0;
+        questions.forEach((q, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (selected && parseInt(selected.value) === q.ans) {
+                score++;
+            }
+        });
+        window.scrollTo(0, 0);
+        document.getElementById('quiz-box').style.display = 'none';
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<h2>ফলাফল</h2><hr><p style="font-size: 24px;">আপনার প্রাপ্ত নম্বর: <b>${score}</b> / ${questions.length}</p><br><button onclick="location.reload()">আবার পরীক্ষা দিন</button>`;
+    }
+</script>
+
+</body>
+</html>

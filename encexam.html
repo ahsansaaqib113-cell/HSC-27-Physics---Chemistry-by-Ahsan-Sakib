@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>রসায়ন ও পদার্থবিজ্ঞান পরীক্ষা</title>
+    <title>পরীক্ষা</title>
     <style>
         body { font-family: 'Times New Roman', Times, serif; background-color: #fff; color: #000; padding: 20px; line-height: 1.6; }
         .container { max-width: 800px; margin: auto; }
-        h1 { text-align: center; text-decoration: underline; margin-bottom: 30px; color: #000; }
+        h1 { text-align: center; text-decoration: underline; margin-bottom: 30px; }
         #timer { position: fixed; top: 10px; right: 10px; border: 2px solid #000; padding: 10px; font-weight: bold; background: #fff; z-index: 100; }
         .question { margin-bottom: 25px; border-bottom: 1px dashed #ccc; padding-bottom: 15px; }
         .question p { margin-bottom: 8px; font-weight: bold; font-size: 1.1rem; }
-        .options { margin-left: 20px; display: block; }
+        .options { margin-left: 20px; }
         .options label { display: block; margin: 5px 0; cursor: pointer; }
         .frac { display: inline-block; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 2px; }
         .frac span { display: block; padding: 0 2px; }
         .frac span.bottom { border-top: 1px solid black; }
+        
+        /* রিভিউ স্টাইল */
+        .correct-ans { color: #155724; background-color: #d4edda; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
+        .wrong-ans { color: #721c24; background-color: #f8d7da; padding: 2px 5px; border-radius: 4px; text-decoration: line-through; }
+        .review-item { margin-top: 10px; font-size: 0.95rem; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
+
         button { display: block; width: 220px; padding: 12px; border: 2px solid #000; background: #f0f0f0; cursor: pointer; margin: 40px auto; font-size: 18px; font-weight: bold; }
         button:hover { background: #e0e0e0; }
-        #result { display: none; text-align: center; border: 3px solid #000; padding: 30px; margin-top: 50px; }
+        #result { display: none; }
+        .score-box { text-align: center; border: 3px solid #000; padding: 20px; margin-bottom: 30px; }
     </style>
 </head>
 <body>
@@ -26,12 +33,19 @@
 <div id="timer">সময় বাকি: 40:00</div>
 
 <div class="container" id="quiz-box">
-    <h1>রসায়ন ও পদার্থবিজ্ঞান চূড়ান্ত পরীক্ষা</h1>
+    <h1>Environmental Chemistry</h1>
+    <h4>Marks: 50</h4>
+    <h5>Time: 40 minutes</h5>
     <div id="questions-container"></div>
     <button onclick="calculateScore()">সাবমিট করুন</button>
 </div>
 
-<div class="container" id="result"></div>
+<div class="container" id="result">
+    <div class="score-box" id="score-display"></div>
+    <h3>উত্তরপত্র রিভিউ:</h3>
+    <div id="review-container"></div>
+    <button onclick="location.reload()">আবার পরীক্ষা দিন</button>
+</div>
 
 <script>
     function createFrac(top, bottom) {
@@ -59,16 +73,16 @@
         { q: "১৮. বেগের সঠিক সম্পর্ক কোনটি?", options: ["(a) C<sub>rms</sub> > C<sub>avg</sub> > C<sub>mp</sub>", "(b) C<sub>rms</sub> < C<sub>avg</sub>", "(c) C<sub>avg</sub> > C<sub>rms</sub>", "(d) C<sub>mp</sub> > C<sub>avg</sub>"], ans: 0 },
         { q: `১৯. 16g He (n=4) এর জন্য সঠিক ভ্যান ডার ওয়ালস সমীকরণ কোনটি?`, options: ["(a) (P + " + createFrac('a', 'V<sup>2</sup>') + ")(V - b) = RT", "(b) (P + " + createFrac('16a', 'V<sup>2</sup>') + ")(V - 4b) = 4RT", "(c) (P + " + createFrac('n<sup>2</sup>a', 'V<sup>2</sup>') + ")(V - nb) = nRT", "(d) b ও c উভয়ই"], ans: 3 },
         { q: "২০. কী অবস্থায় বাস্তব গ্যাস আদর্শ আচরণ করে?", options: ["(a) নিম্ন T ও উচ্চ P", "(b) উচ্চ T ও নিম্ন P", "(c) উচ্চ T ও উচ্চ P", "(d) নিম্ন T ও নিম্ন P"], ans: 1 },
-        { q: "২১. জলীয় বাষ্পের উপস্থিতিতে শুষ্ক গ্যাসের চাপ (P<sub>dry</sub>):", options: ["(a) P<sub>total</sub> - f", "(b) P<sub>total</sub> + f", "(c) f - P<sub>total</sub>", "(d) P<sub>total</sub> * f"], ans: 0 },
+        { q: "২১. শুষ্ক গ্যাসের চাপ (P<sub>dry</sub>):", options: ["(a) P<sub>total</sub> - f", "(b) P<sub>total</sub> + f", "(c) f - P<sub>total</sub>", "(d) P<sub>total</sub> * f"], ans: 0 },
         { q: "২২. কোন গ্যাস জোড়ায় ব্যাপন হার সমান?", options: ["(a) CO<sub>2</sub> & NO<sub>2</sub>", "(b) CO<sub>2</sub> & N<sub>2</sub>O", "(c) CO & N<sub>2</sub>O", "(d) NO & CO"], ans: 1 },
         { q: "২৩. 273K এ 1/V=0.04 হলে P=1 atm; 1/V=0.035 হলে P কত?", options: ["(ক) 1.875 atm", "(খ) 1.142 atm", "(গ) 0.875 atm", "(ঘ) 0.352 atm"], ans: 2 },
         { q: "২৪. নিচের কোনটি চাপের একক নয়?", options: ["(a) Nm<sup>-2</sup>", "(b) atm", "(c) Litre-atm", "(d) torr"], ans: 2 },
-        { q: "২৫. M<sub>A</sub> > M<sub>C</sub> > M<sub>B</sub> হলে সমভরের গ্যাসের চাপের সম্পর্ক:", options: ["(a) P<sub>A</sub> = P<sub>B</sub>", "(b) P<sub>A</sub> > P<sub>C</sub>", "(c) P<sub>A</sub> < P<sub>C</sub> < P<sub>B</sub>", "(d) P<sub>B</sub> > P<sub>C</sub>"], ans: 2 },
-        { q: "২৬. সমআয়তন ও সমচাপে কোন ফ্লাস্কে অণু সংখ্যা বেশি থাকবে?", options: ["(a) He ফ্লাস্ক", "(b) Ne ফ্লাস্ক", "(c) Kr ফ্লাস্ক", "(d) সবগুলোতে সমান"], ans: 3 },
+        { q: "২৫. M<sub>A</sub> > M<sub>C</sub> > M<sub>B</sub> হলে চাপের সম্পর্ক:", options: ["(a) P<sub>A</sub> = P<sub>B</sub>", "(b) P<sub>A</sub> > P<sub>C</sub>", "(c) P<sub>A</sub> < P<sub>C</sub> < P<sub>B</sub>", "(d) P<sub>B</sub> > P<sub>C</sub>"], ans: 2 },
+        { q: "২৬. সমআয়তন ও সমচাপে কোন ফ্লাস্কে অণু সংখ্যা বেশি?", options: ["(a) He", "(b) Ne", "(c) Kr", "(d) সবগুলোতে সমান"], ans: 3 },
         { q: "২৭. গ্যাসের শেষ তাপমাত্রা কত? (20°C, 1.5 bar → 7.5 bar, 0.04 m³)", options: ["(a) 293°C", "(b) 313°C", "(c) 586°C", "(d) কোনটিই নয়"], ans: 4 },
         { q: "২৮. UF<sub>6</sub> গ্যাসের ব্যাপন হারের সঠিক ক্রম কোনটি?", options: ["(a) <sup>235</sup>UF<sub>6</sub> > <sup>238</sup>UF<sub>6</sub>", "(b) <sup>238</sup>UF<sub>6</sub> > <sup>235</sup>UF<sub>6</sub>", "(c) সমান", "(d) আণবিক ভর নিরপেক্ষ"], ans: 0 },
         { q: "২৯. 50g গ্লুকোজ ও 500mL পানির দ্রবণে পানির মোল ভগ্নাংশ:", options: ["(a) 0.9901", "(b) 0.9801", "(c) 0.9899", "(d) 0.9902"], ans: 0 },
-        { q: "৩০. He এর উৎক্রম তাপমাত্রা (Inversion Temp) কত?", options: ["(a) 240°C", "(b) 80°C", "(c) -80°C", "(d) -240°C"], ans: 3 },
+        { q: "৩০. He এর উৎক্রম তাপমাত্রা কত?", options: ["(a) 240°C", "(b) 80°C", "(c) -80°C", "(d) -240°C"], ans: 3 },
         { q: "৩১. আদর্শ আচরণ থেকে বিচ্যুতির সঠিক ক্রম:", options: ["(a) H<sub>2</sub> < N<sub>2</sub> < CO<sub>2</sub> < NH<sub>3</sub>", "(b) H<sub>2</sub> < NH<sub>3</sub>", "(c) CO<sub>2</sub> > NH<sub>3</sub>", "(d) N<sub>2</sub> > H<sub>2</sub>"], ans: 0 },
         { q: "৩২. মিনামাটা রোগ কোনটির দূষণে হয়?", options: ["ক. Pb", "খ. Hg", "গ. Cd", "ঘ. Cr"], ans: 1 },
         { q: "৩৩. স্ট্রাটোস্ফিয়ার এর মুখ্য উপাদান কোনটি?", options: ["ক. N<sub>2</sub>", "খ. O<sub>3</sub>", "গ. H<sub>2</sub>", "ঘ. CO<sub>2</sub>"], ans: 1 },
@@ -80,9 +94,9 @@
         { q: "৩৯. ফটোকেমিক্যাল স্মোগ তৈরিতে কোনটি ভূমিকা রাখে না?", options: ["ক. হাইড্রোকার্বন", "খ. NO<sub>2</sub>", "গ. O<sub>3</sub>", "ঘ. CFC"], ans: 3 },
         { q: "৪০. বায়ুমণ্ডলের কোন গ্যাসকে 'নীরব ঘাতক' বলা হয়?", options: ["ক. CO", "খ. SO<sub>2</sub>", "গ. KMnO<sub>4</sub>", "ঘ. NH<sub>3</sub>"], ans: 0 },
         { q: "৪১. FGD প্লান্টের মাধ্যমে কোনটি দূর করা যায় না?", options: ["ক. SO<sub>x</sub>", "খ. NO<sub>x</sub>", "গ. CO<sub>2</sub>", "ঘ. CO"], ans: 2 },
-        { q: "৪২. ফ্রেয়ন-১২ (Freon-12) নামে পরিচিত কোনটি?", options: ["ক. CF<sub>2</sub>Cl<sub>2</sub>", "খ. CFCl<sub>3</sub>", "গ. CHF<sub>2</sub>Cl", "ঘ. CHFCl<sub>2</sub>"], ans: 0 },
+        { q: "৪২. ফ্রেয়ন-১২ নামে পরিচিত কোনটি?", options: ["ক. CF<sub>2</sub>Cl<sub>2</sub>", "খ. CFCl<sub>3</sub>", "গ. CHF<sub>2</sub>Cl", "ঘ. CHFCl<sub>2</sub>"], ans: 0 },
         { q: "৪৩. এসিড বৃষ্টির pH এর মান সাধারণত কত?", options: ["ক. > ৫.৬", "খ. < ৫.৬", "গ. > ৬.৫", "ঘ. < ৬.৫"], ans: 1 },
-        { q: "৪৪. এসিড বৃষ্টির জন্য প্রধানত দায়ী কোন গ্যাসটি?", options: ["ক. NO", "খ. NO<sub>2</sub>", "গ. SO<sub>2</sub>", "ঘ. SO<sub>3</sub>"], ans: 2 },
+        { q: "৪৪. এসিড বৃষ্টির জন্য প্রধানত দায়ী কোনটি?", options: ["ক. NO", "খ. NO<sub>2</sub>", "গ. SO<sub>2</sub>", "ঘ. SO<sub>3</sub>"], ans: 2 },
         { q: "৪৫. নিচের কোনটি লুইস এসিড নয়?", options: ["ক. BCl<sub>3</sub>", "খ. SnCl<sub>4</sub>", "গ. BaCl<sub>2</sub>", "ঘ. AlCl<sub>3</sub>"], ans: 2 },
         { q: "৪৬. সবচেয়ে দুর্বল এসিড কোনটি?", options: ["ক. HNO<sub>3</sub>", "খ. HClO<sub>4</sub>", "গ. H<sub>2</sub>SO<sub>4</sub>", "ঘ. H<sub>3</sub>PO<sub>4</sub>"], ans: 3 },
         { q: "৪৭. ব্রনস্টেড-লাউরি এসিড কিন্তু আরহেনিয়াস নয় কোনটি?", options: ["ক. CH<sub>3</sub>COOH", "খ. AlCl<sub>3</sub>", "গ. NH<sub>4</sub><sup>+</sup>", "ঘ. BF<sub>3</sub>"], ans: 2 },
@@ -91,14 +105,14 @@
         { q: "৫০. H<sub>2</sub>S এর অনুবন্ধী ক্ষারক কোনটি?", options: ["ক. NH<sub>3</sub>", "খ. HS<sup>-</sup>", "গ. NH<sub>4</sub><sup>+</sup>", "ঘ. S<sup>2-</sup>"], ans: 1 }
     ];
 
-    const container = document.getElementById('questions-container');
+    const qContainer = document.getElementById('questions-container');
     questions.forEach((q, index) => {
         let qDiv = document.createElement('div');
         qDiv.className = 'question';
         qDiv.innerHTML = `<p>${q.q}</p><div class="options">` +
             q.options.map((opt, i) => `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label>`).join('') +
             `</div>`;
-        container.appendChild(qDiv);
+        qContainer.appendChild(qDiv);
     });
 
     let timeLeft = 40 * 60;
@@ -107,27 +121,43 @@
         let mins = Math.floor(timeLeft / 60);
         let secs = timeLeft % 60;
         timerElement.innerText = `সময় বাকি: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            calculateScore();
-        }
+        if (timeLeft <= 0) { clearInterval(timerInterval); calculateScore(); }
         timeLeft--;
     }, 1000);
 
     function calculateScore() {
         clearInterval(timerInterval);
         let score = 0;
+        const reviewContainer = document.getElementById('review-container');
+        reviewContainer.innerHTML = ''; 
+
         questions.forEach((q, index) => {
-            const selected = document.querySelector(`input[name="q${index}"]:checked`);
-            if (selected && parseInt(selected.value) === q.ans) {
-                score++;
-            }
+            const selectedInput = document.querySelector(`input[name="q${index}"]:checked`);
+            const selectedIdx = selectedInput ? parseInt(selectedInput.value) : null;
+            const isCorrect = selectedIdx === q.ans;
+
+            if (isCorrect) score++;
+
+            // রিভিউ আইটেম তৈরি
+            let reviewDiv = document.createElement('div');
+            reviewDiv.className = 'review-item';
+            
+            let userAnsText = selectedIdx !== null ? q.options[selectedIdx] : "<span style='color:red'>উত্তর দেওয়া হয়নি</span>";
+            let correctAnsText = q.options[q.ans];
+
+            reviewDiv.innerHTML = `
+                <strong>${q.q}</strong><br>
+                আপনার উত্তর: <span class="${isCorrect ? 'correct-ans' : 'wrong-ans'}">${userAnsText}</span><br>
+                ${!isCorrect ? `সঠিক উত্তর: <span class="correct-ans">${correctAnsText}</span>` : ''}
+            `;
+            reviewContainer.appendChild(reviewDiv);
         });
+
         window.scrollTo(0, 0);
         document.getElementById('quiz-box').style.display = 'none';
-        const resultDiv = document.getElementById('result');
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = `<h2>ফলাফল</h2><hr><p style="font-size: 24px;">আপনার প্রাপ্ত নম্বর: <b>${score}</b> / ${questions.length}</p><br><button onclick="location.reload()">আবার পরীক্ষা দিন</button>`;
+        document.getElementById('timer').style.display = 'none';
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('score-display').innerHTML = `<h2>পরীক্ষার ফলাফল</h2><p style="font-size: 24px;">প্রাপ্ত নম্বর: <b>${score}</b> / ${questions.length}</p>`;
     }
 </script>
 
